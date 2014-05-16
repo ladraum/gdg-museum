@@ -7,6 +7,8 @@ import com.estimote.sdk.Region;
 
 public interface EstimoteBeaconServiceDelegate {
 	
-	public void onBeaconsDiscovered(Region region, List<Beacon> beacons);
+	public void didGetCloserToBeacon(Beacon beacon);
+
+	public void onBeaconsDiscovered(final Region region, final List<Beacon> beacons);
 
 }

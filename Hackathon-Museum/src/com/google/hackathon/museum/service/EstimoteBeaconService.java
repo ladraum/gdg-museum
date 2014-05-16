@@ -1,14 +1,17 @@
 package com.google.hackathon.museum.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.Resources.Theme;
 import android.os.RemoteException;
 import android.util.Log;
 
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
+import com.estimote.sdk.Utils;
 import com.google.hackathon.museum.delegate.EstimoteBeaconServiceDelegate;
 
 public class EstimoteBeaconService {
@@ -19,6 +22,9 @@ public class EstimoteBeaconService {
 	private static EstimoteBeaconService instance;
 	private static final String TAG = "Hackathon";
 	private EstimoteBeaconServiceDelegate delegate;
+	private int pingLimit = 5;
+	
+	private HashMap<Beacon, Integer> pingCount = new HashMap<Beacon, Integer>();
 	
 	private Context context;
 
@@ -47,6 +53,34 @@ public class EstimoteBeaconService {
 				if(EstimoteBeaconService.instance.delegate != null) {
 					EstimoteBeaconService.instance.delegate.onBeaconsDiscovered(region, beacons);
 				}
+				
+				for (Beacon beacon : beacons) {
+					if (pingCount.containsKey(beacon)) {
+						int pingAmount = pingCount.get(beacon);
+						Log.i(TAG, "Beacon=["+beacon.getMinor()+"] with pingAmount=" + pingAmount);
+						if (pingAmount >= pingLimit) {
+							if(EstimoteBeaconService.instance.delegate != null) {
+								EstimoteBeaconService.instance.delegate.didGetCloserToBeacon(beacon);
+							}
+						}
+						double distance = Utils.computeAccuracy(beacon);
+						if(distance > 0 && distance < 1) {
+							
+							if (pingAmount < pingLimit) {
+								pingCount.clear();
+								pingCount.put(beacon, (pingAmount + 1));
+							}
+						} else {
+							if (pingAmount > 0) {
+								pingCount.put(beacon, (pingAmount - 1));
+							}
+							
+						}
+					} else {
+						pingCount.put(beacon, 0);
+					}
+				}
+				
 			}
 		});
 	}

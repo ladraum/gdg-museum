@@ -20,7 +20,7 @@
         android:text="@string/beacons_in_range" />
 
     <TextView
-        android:id="@+id/label_amount_in_range"
+        android:id="@+id/txt_beacons_in_range"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/label_beacons_in_range"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/lbl_first_uuid"
         android:layout_alignBottom="@+id/lbl_first_uuid"
-        android:layout_alignLeft="@+id/label_amount_in_range"
+        android:layout_alignLeft="@+id/txt_beacons_in_range"
         android:contentDescription="@string/beacons_in_range_label"
         android:text="@string/refreshing" />
 
@@ -109,5 +109,15 @@
         android:layout_alignLeft="@+id/txt_first_minor"
         android:contentDescription="@string/beacons_in_range_label"
         android:text="@string/refreshing" />
+
+    <Button
+        android:id="@+id/btn_find_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_first_distance"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Is there a Product"
+        android:onClick="findProduct" />
 
 </RelativeLayout>
