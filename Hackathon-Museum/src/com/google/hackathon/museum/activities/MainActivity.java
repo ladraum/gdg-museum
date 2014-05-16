@@ -10,10 +10,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
+import com.google.android.gms.plus.PlusShare;
 import com.google.hackathon.museum.R;
 import com.google.hackathon.museum.delegate.EstimoteApiGatewayDelegate;
 import com.google.hackathon.museum.delegate.EstimoteBeaconServiceDelegate;
@@ -153,8 +157,27 @@ public class MainActivity extends Activity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		menu.add(1, 200, 0, "Share w/ Google+");
 		return true;
 	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 200: {
+            	Intent shareIntent = new PlusShare.Builder(this)
+                .setText("Checkout what I did @ GDG Hackathon!")
+                .setType("image/png")
+                .setContentDeepLinkId("testID",
+                        "Look that place!",
+                        "Test Description",
+                        Uri.parse("android.resource://" + getPackageName() + "/drawable/" + "whale"))
+                .getIntent();
+            	startActivityForResult(shareIntent, 0);
+                 return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

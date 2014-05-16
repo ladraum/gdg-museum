@@ -21,13 +21,20 @@
         <activity
             android:configChanges="orientation"
     		android:screenOrientation="portrait"
-            android:name="com.google.hackathon.museum.activities.MainActivity"
+            android:name="com.google.hackathon.museum.activities.SplashScreenActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        
+        <activity
+            android:configChanges="orientation"
+    		android:screenOrientation="portrait"
+            android:name="com.google.hackathon.museum.activities.MainActivity"
+            android:label="@string/app_name" >
         </activity>
     </application>
 

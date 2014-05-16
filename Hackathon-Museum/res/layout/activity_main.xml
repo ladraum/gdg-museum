@@ -110,14 +110,4 @@
         android:contentDescription="@string/beacons_in_range_label"
         android:text="@string/refreshing" />
 
-    <Button
-        android:id="@+id/btn_find_product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_first_distance"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="Is there a Product"
-        android:onClick="findProduct" />
-
 </RelativeLayout>

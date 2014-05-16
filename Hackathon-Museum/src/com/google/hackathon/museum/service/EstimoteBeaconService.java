@@ -1,5 +1,8 @@
 package com.google.hackathon.museum.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,20 +53,39 @@ public class EstimoteBeaconService {
 		beaconManager.setRangingListener(new BeaconManager.RangingListener() {
 			@Override
 			public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
+				List<Beacon> sortedBeacons = new ArrayList<Beacon>(beacons);
 				if(EstimoteBeaconService.instance.delegate != null) {
-					EstimoteBeaconService.instance.delegate.onBeaconsDiscovered(region, beacons);
+					Collections.sort(sortedBeacons, new Comparator<Beacon>() {
+
+						public int compare(Beacon first, Beacon second) {
+							double firstDistance = Utils.computeAccuracy(first);
+							double secondDistance = Utils.computeAccuracy(second);
+							if(firstDistance < 0) {
+								// negative numbers should be on the final of list
+								return 1;
+							}
+							
+							if(firstDistance < secondDistance) {
+								return -1;
+							} else {
+								return 1;
+							}
+						}
+					});
+					EstimoteBeaconService.instance.delegate.onBeaconsDiscovered(region, sortedBeacons);
 				}
 				
-				for (Beacon beacon : beacons) {
+				Beacon beacon = sortedBeacons.iterator().next();
 					if (pingCount.containsKey(beacon)) {
 						int pingAmount = pingCount.get(beacon);
-						Log.i(TAG, "Beacon=["+beacon.getMinor()+"] with pingAmount=" + pingAmount);
+						double distance = Utils.computeAccuracy(beacon);
+						Log.i(TAG, "Beacon=["+beacon.getMinor()+"] with pingAmount=" + pingAmount + " and distance=" + distance);
 						if (pingAmount >= pingLimit) {
 							if(EstimoteBeaconService.instance.delegate != null) {
 								EstimoteBeaconService.instance.delegate.didGetCloserToBeacon(beacon);
 							}
 						}
-						double distance = Utils.computeAccuracy(beacon);
+						
 						if(distance > 0 && distance < 1) {
 							
 							if (pingAmount < pingLimit) {
@@ -80,8 +102,6 @@ public class EstimoteBeaconService {
 						pingCount.put(beacon, 0);
 					}
 				}
-				
-			}
 		});
 	}
 	
