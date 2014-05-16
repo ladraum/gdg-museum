@@ -3,6 +3,11 @@
 
     <string name="app_name">Hackathon-Museum</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="beacons_in_range_label">Beacons in range label</string>
+    <string name="beacons_in_range">Beacons in range:</string>
+    <string name="refreshing">Refreshing...</string>
+    <string name="first_uuid">First UUID</string>
+    <string name="first_major">First Major</string>
+    <string name="first_minor">First Minor</string>
+    
 </resources>
