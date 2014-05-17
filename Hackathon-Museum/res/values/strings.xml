@@ -10,4 +10,11 @@
     <string name="first_major">First Major</string>
     <string name="first_minor">First Minor</string>
     
+    <string name="welcome_title">Welcome to the GDG Museum!</string>
+    <string name="welcome_explore">Explore the world inside the Museum!</string>
+    <string name="welcome_search">Discover for your favorite history!</string>
+    <string name="hint">Your questions will be answered when the question is green!</string>
+    <string name="searcher">\?</string>
+    <string name="found">!</string>
+
 </resources>

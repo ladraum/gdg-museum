@@ -34,118 +34,123 @@ import com.google.hackathon.museum.service.EstimoteBeaconService;
 
 public class MainActivity extends Activity implements
 		EstimoteBeaconServiceDelegate, EstimoteApiGatewayDelegate {
-	
+
 	private Map<String, Integer> imagePath = new HashMap<String, Integer>();
 
 	private static final String TAG = "Hackathon";
-	private NumberFormat formatter = new DecimalFormat("#0.00");
-	
+	private NumberFormat formatter = new DecimalFormat( "#0.00" );
+
 	private EstimoteBeaconService estimoteBeaconService = null;
 	private EstimoteApiGateway estimoteApiGateway = null;
-	
+
 	private TextView txtBeaconsInRange = null;
 	private TextView txtFirstUUID = null;
 	private TextView txtFirstMajor = null;
 	private TextView txtFirstMinor = null;
 	private TextView txtFirstDistance = null;
-	
+
 	private Beacon nearbyBeacon = null;
 	private Beacon lastBeacon = null;
 	private boolean showingImage = false;
-	
+
+	private ProximityActivity proximityActivity = null;
+
 	@Override
-	public void didGetCloserToBeacon(Beacon beacon) {
-		if(!showingImage && !beacon.equals(this.lastBeacon)) {
+	public void didGetCloserToBeacon( Beacon beacon ) {
+		if ( !showingImage && !beacon.equals( this.lastBeacon ) ) {
 			this.lastBeacon = beacon;
-			estimoteApiGateway.findProductByNearbyBeacon(this.lastBeacon);
+			estimoteApiGateway.findProductByNearbyBeacon( this.lastBeacon );
 		}
 	}
 
 	@Override
-	public void onBeaconsDiscovered(final Region region, final List<Beacon> beacons) {
-		if(!beacons.isEmpty()) {
+	public void onBeaconsDiscovered( final Region region, final List<Beacon> beacons ) {
+		if ( !beacons.isEmpty() ) {
 			final Beacon beacon = beacons.iterator().next();
-			
-			if (!beacon.equals(this.nearbyBeacon)) {
+
+			if ( !beacon.equals( this.nearbyBeacon ) ) {
 				this.nearbyBeacon = beacon;
 			}
-			
-			final double distance = Utils.computeAccuracy(beacon);
-			runOnUiThread(new Runnable() {
+
+			final double distance = Utils.computeAccuracy( beacon );
+			runOnUiThread( new Runnable() {
 				@Override
 				public void run() {
-					MainActivity.this.txtBeaconsInRange.setText(String.valueOf(beacons.size()));
-					MainActivity.this.txtFirstUUID.setText(String.valueOf(beacon.getProximityUUID()));
-					MainActivity.this.txtFirstMajor.setText(String.valueOf(beacon.getMajor()));
-					MainActivity.this.txtFirstMinor.setText(String.valueOf(beacon.getMinor()));
-					MainActivity.this.txtFirstDistance.setText(formatter.format(distance) + "m");
+					MainActivity.this.txtBeaconsInRange.setText( String.valueOf( beacons.size() ) );
+					MainActivity.this.txtFirstUUID.setText( String.valueOf( beacon.getProximityUUID() ) );
+					MainActivity.this.txtFirstMajor.setText( String.valueOf( beacon.getMajor() ) );
+					MainActivity.this.txtFirstMinor.setText( String.valueOf( beacon.getMinor() ) );
+					MainActivity.this.txtFirstDistance.setText( formatter.format( distance ) + "m" );
 				}
-			});
+			} );
 		}
 	}
-	
-	@Override
-	public void didMuseumProductFound(Art museumProduct) {
-		Log.i(TAG, "Welcome to: " + museumProduct.getImagePath());
-		
-		if(!showingImage) {
-			LayoutInflater inflater = getLayoutInflater();
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			View modal = inflater.inflate(R.layout.show_image, null);
-			ImageView modelImage = (ImageView)modal.findViewById(R.id.model_image);
-			modelImage.setImageResource(imagePath.get(museumProduct.getImagePath()));
 
-			builder.setView(modal)
-				.setOnDismissListener(new OnDismissListener() {
-				
-				@Override
-				public void onDismiss(DialogInterface dialog) {
-					showingImage = false;
-				}
-			});
-			
-			modelImage.setImageResource(imagePath.get(museumProduct.getImagePath()));
-				
+	@Override
+	public void didMuseumProductFound( Art museumProduct ) {
+		Log.i( TAG, "Welcome to: " + museumProduct.getImagePath() );
+
+		if ( !showingImage ) {
+			LayoutInflater inflater = getLayoutInflater();
+			AlertDialog.Builder builder = new AlertDialog.Builder( this );
+			View modal = inflater.inflate( R.layout.show_image, null );
+			ImageView modelImage = (ImageView)modal.findViewById( R.id.model_image );
+			modelImage.setImageResource( imagePath.get( museumProduct.getImagePath() ) );
+
+			builder.setView( modal )
+					.setOnDismissListener( new OnDismissListener() {
+
+						@Override
+						public void onDismiss( DialogInterface dialog ) {
+							showingImage = false;
+						}
+					} );
+
+			modelImage.setImageResource( imagePath.get( museumProduct.getImagePath() ) );
+
 			AlertDialog dialog = builder.create();
 			dialog.show();
 			showingImage = true;
 		}
-				
+
 	}
-	
+
 	// Lifecycle callbacks
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreate( Bundle savedInstanceState ) {
+		super.onCreate( savedInstanceState );
 
-		setContentView(R.layout.activity_main);
-		this.txtBeaconsInRange = (TextView) findViewById(R.id.txt_beacons_in_range);
-		this.txtFirstUUID = (TextView) findViewById(R.id.txt_first_uuid);
-		this.txtFirstMajor = (TextView) findViewById(R.id.txt_first_major);
-		this.txtFirstMinor = (TextView) findViewById(R.id.txt_first_minor);
-		this.txtFirstDistance = (TextView) findViewById(R.id.txt_first_distance);
-		
-		this.imagePath.put("whale.png", R.drawable.whale);
-		this.imagePath.put("tsubasa.png", R.drawable.tsubasa);
+		setContentView( R.layout.activity_main );
+		this.txtBeaconsInRange = (TextView)findViewById( R.id.txt_beacons_in_range );
+		this.txtFirstUUID = (TextView)findViewById( R.id.txt_first_uuid );
+		this.txtFirstMajor = (TextView)findViewById( R.id.txt_first_major );
+		this.txtFirstMinor = (TextView)findViewById( R.id.txt_first_minor );
+		this.txtFirstDistance = (TextView)findViewById( R.id.txt_first_distance );
 
-		estimoteBeaconService = EstimoteBeaconService.getInstance(getApplicationContext());
+		this.imagePath.put( "whale.png", R.drawable.whale );
+		this.imagePath.put( "tsubasa.png", R.drawable.tsubasa );
+
+		estimoteBeaconService = EstimoteBeaconService.getInstance( getApplicationContext() );
 		estimoteBeaconService.startRanging();
+
+		proximityActivity = new ProximityActivity( (TextView)findViewById( R.id.textQuestion ),
+				(TextView)findViewById( R.id.textExclamation ) );
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		estimoteBeaconService.connect();
-		estimoteBeaconService.register(this);
+		estimoteBeaconService.register( this );
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		estimoteApiGateway = EstimoteApiGateway.getinstance();
-		estimoteApiGateway.registerDelegate(this);
+		estimoteApiGateway.registerDelegate( this );
 	}
 
 	@Override
@@ -155,29 +160,33 @@ public class MainActivity extends Activity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu( Menu menu ) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		menu.add(1, 200, 0, "Share w/ Google+");
+		menu.add( 1, 200, 0, "Share w/ Google+" );
 		return true;
 	}
-	
+
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 200: {
-            	Intent shareIntent = new PlusShare.Builder(this)
-                .setText("Checkout what I did @ GDG Hackathon!")
-                .setType("image/png")
-                .setContentDeepLinkId("testID",
-                        "Look that place!",
-                        "Test Description",
-                        Uri.parse("android.resource://" + getPackageName() + "/drawable/" + "whale"))
-                .getIntent();
-            	startActivityForResult(shareIntent, 0);
-                 return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	public boolean onOptionsItemSelected( MenuItem item ) {
+		switch ( item.getItemId() ) {
+			case 200: {
+				Intent shareIntent = new PlusShare.Builder( this )
+						.setText( "Checkout what I did @ GDG Hackathon!" )
+						.setType( "image/png" )
+						.setContentDeepLinkId( "testID",
+								"Look that place!",
+								"Test Description",
+								Uri.parse( "android.resource://" + getPackageName() + "/drawable/" + "whale" ) )
+						.getIntent();
+				startActivityForResult( shareIntent, 0 );
+				return true;
+			}
+		}
+		return super.onOptionsItemSelected( item );
+	}
+
+	public void changeFakeProximity( View view ) {
+		proximityActivity.changeFakeProximity( view );
+	}
 
 }
